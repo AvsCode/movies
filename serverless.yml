@@ -1,0 +1,59 @@
+service: movies
+
+# Use serverless-webpack plugin to transpile ES6/ES7
+plugins:
+  - serverless-webpack
+
+# Enable auto-packing of external modules
+custom:
+  webpackIncludeModules: true
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  stage: prod
+  region: us-west-2
+  iamRoleStatements: 
+    - Effect: Allow
+      Action: 
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:us-west-2:*:*"
+functions: 
+  createMovieRating:
+    handler: createMovieRating.main
+    events:
+      - http:
+          path: movies/createMovieRating
+          method: post
+          cors: true
+          authorizer: aws_iam
+  getMovieRatings:
+    handler: getMovieRatings.main
+    events:
+      - http:
+          path: movies/getMovieRatings
+          method: get
+          cors: true
+          authorizer: aws_iam
+  updateMovieRating:
+    handler: updateMovieRating.main
+    events:
+      - http:
+          path: movies/updateMovieRating/
+          method: put
+          cors: true
+          authorizer: aws_iam
+  deleteMovieRating:
+    handler: deleteMovieRating.main
+    events: 
+      - http:
+          path: movies/deleteMovieRating/
+          method: delete
+          cors: true
+          authorizer: aws_iam
