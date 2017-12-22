@@ -12,24 +12,7 @@ const movieDbApi = (function(){
             return response.results;
         });
     }
-    async function queryMultiple(movieList){
-        console.log(movieList);
-        let moviePromises = movieList.map((movie) => {
-            return fetch(singleMovieUrl + movie.movieId + '?api_key=' + apiKey + '&language=en-US', {method: 'GET'})
-            .then((response) => {
-                return response.json();
-            })
-            .then((response) => {
-                return response;
-            });
-        });
-        return Promise.all(moviePromises)
-        .then((movies) => {
-            console.log(movies);
-            return movies;
-        });
-    }
-    async function queryMultiple2(response){
+    async function queryMultiple(response){
         let movieList = response.Items;
         let moviePromises = movieList.map((movie) => {
             return fetch(singleMovieUrl + movie.movieId + '?api_key=' + apiKey + '&language=en-US', {method: 'GET'})
@@ -59,7 +42,6 @@ const movieDbApi = (function(){
     return {
         queryDb,
         queryMultiple,
-        queryMultiple2,
         getMovieRecommendations
     }
 })();

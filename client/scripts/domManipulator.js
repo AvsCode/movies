@@ -4,7 +4,7 @@ import {
     unHilightRating,
     submitRatedMovie
 } from './ratings.js';
-
+import carouselCreator from './carouselCreator.js';
 
 const domManipulator = (function() {
 
@@ -21,6 +21,9 @@ const domManipulator = (function() {
     
     let availableWidth;
     let numberOfDisplayedMovies;
+    let searchMovieProperties = {};
+    
+    setMovieContainers();
 
     function buildMovieResults(movieSearchResults, movieListContainer) {
         while (movieListContainer.firstChild) {
@@ -35,130 +38,33 @@ const domManipulator = (function() {
         });
         setMovieContainers();
         setNumberOfDisplayedMovies();
-        for(let i = numberOfDisplayedMovies; i < searchMovies.length; i++){
-            searchMovies[i].classList.add("hidden", ["toRight"]);
-        }
-    }
-    function formatMovieLists() {
-        setMovieContainers();
-        setNumberOfDisplayedMovies();
-
-        for (let i = firstDisplayedSearchMovieIndex; i < firstDisplayedSearchMovieIndex + numberOfDisplayedMovies; i++) {
-            if (searchMovies[i] && searchMovies[i].classList.contains("hidden")) {
-                searchMovies[i].classList.remove("hidden");
-            }
-        }
-        for(let i = firstDisplayedRatedMovieIndex; i < firstDisplayedRatedMovieIndex + numberOfDisplayedMovies; i++){
-            if (ratedMovies[i] && ratedMovies[i].classList.contains("hidden")) {
-                ratedMovies[i].classList.remove("hidden");
-            }
-        }
-        for(let i = firstDisplayedRecommendedMovieIndex; i < firstDisplayedRecommendedMovieIndex + numberOfDisplayedMovies; i++){
-            if (recommendedMovies[i] && recommendedMovies[i].classList.contains("hidden")) {
-                recommendedMovies[i].classList.remove("hidden");
-            }
-        }
-        for (let i = firstDisplayedSearchMovieIndex + numberOfDisplayedMovies; i < searchMovies.length; i++) {
-            searchMovies[i].classList.add("hidden");
-        }
-        for (let i = firstDisplayedRatedMovieIndex + numberOfDisplayedMovies; i < ratedMovies.length; i++) {
-            ratedMovies[i].classList.add("hidden");
-        }
-        for (let i = firstDisplayedRecommendedMovieIndex + numberOfDisplayedMovies; i < recommendedMovies.length; i++) {
-            recommendedMovies[i].classList.add("hidden");
-        }
-    }
-
-    function shiftSearchMovieList(direction){
-        let location = firstDisplayedSearchMovieIndex;
-        if(direction === 'left'){
-            // Loop through currently visible items, set them to hidden
-            for(let i = 0; i < numberOfDisplayedMovies; i++){
-                if(location == searchMovies.length){
-                    location = 0;
-                }
-                searchMovies[location].classList.remove("toRight");
-                searchMovies[location].classList.remove("fromLeft");
-                searchMovies[location].classList.remove("fromRight");
-                searchMovies[location].classList.add("hidden");
-                searchMovies[location].classList.add("toLeft");
-                location ++;
-            }
-            if(firstDisplayedSearchMovieIndex == 0){
-                location = searchMovies.length - 1;
-            }
-            else{
-                location = firstDisplayedSearchMovieIndex - 1;
-            }
-            // Loop again to set newly visible items
-            for(let i = 0; i < numberOfDisplayedMovies; i++){
-                if(location == -1){
-                    location = searchMovies.length - 1;
-                }
-                searchMovies[location].classList.remove("hidden");
-                searchMovies[location].classList.remove("toRight");
-                searchMovies[location].classList.remove("toLeft");
-                searchMovies[location].classList.remove("fromleft");
-                searchMovies[location].classList.add("fromRight");
-                location--;
-            }
-            firstDisplayedSearchMovieIndex = location + 1;
-        }
-        else{
-            // Loop through currently visible items, set them to hidden
-            for(let i = 0; i < numberOfDisplayedMovies; i++){
-                if(location == searchMovies.length){
-                    location = 0;
-                }
-                searchMovies[location].classList.remove("toLeft");
-                searchMovies[location].classList.remove("fromRight");
-                searchMovies[location].classList.remove("fromLeft");
-                searchMovies[location].classList.add("hidden");
-                searchMovies[location].classList.add("toRight");
-                location++;
-            }
-            firstDisplayedSearchMovieIndex = location;
-            // Loop again to set newly visible items
-            for(let i = 0; i < numberOfDisplayedMovies; i++){
-                if(location == searchMovies.length){
-                    location = 0;
-                }
-                searchMovies[location].classList.remove("hidden");
-                searchMovies[location].classList.remove("toRight");
-                searchMovies[location].classList.remove("toLeft");
-                searchMovies[location].classList.remove("fromRight");
-                searchMovies[location].classList.add("fromLeft");
-                location++;
-            }
-        }
-    }
-
-    function setVisibileMovieIndexes() {
-        for (let i = 0; i < searchMovies.length; i++) {
-            if (searchMovies[i] && !searchMovies[i].classList.contains("hidden")) {
-                firstDisplayedSearchMovieIndex = i;
-            }
-        }
-        for (let i = 0; i < ratedMovies.length; i++) {
-            if (ratedMovies[i] && !ratedMovies[i].classList.contains("hidden")) {
-                firstDisplayedRatedMovieIndex = i;
-            }
-        }
-        for (let i = 0; i < recommendedMovies.length; i++) {
-            if (recommendedMovies[i] && !recommendedMovies[i].classList.contains("hidden")) {
-                firstDisplayedRecommendedMovieIndex = i;
-            }
-        }
-        firstDisplayedSearchMovieIndex = firstDisplayedSearchMovieIndex ? firstDisplayedSearchMovieIndex : 0;
-        firstDisplayedRatedMovieIndex = firstDisplayedRatedMovieIndex ? firstDisplayedRatedMovieIndex : 0;
-        firstDisplayedRecommendedMovieIndex = firstDisplayedRecommendedMovieIndex ? firstDisplayedRecommendedMovieIndex : 0;
     }
 
     function setNumberOfDisplayedMovies() {
+        searchMovieProperties.totalWidth = searchMoviesContainer.scrollWidth;
         availableWidth = window.innerWidth;
+        searchMovieProperties.itemWidth = 220;
+        searchMovieProperties.shiftWidth = Math.floor(availableWidth / searchMovieProperties.itemWidth) * searchMovieProperties.itemWidth;
+        searchMovieProperties.shiftNum = Math.ceil(searchMovieProperties.totalWidth / searchMovieProperties.shiftWidth) -1;
+        searchMovieProperties.shiftLocation = 0;
         numberOfDisplayedMovies = Math.floor(availableWidth / 200) - 1;
+
+        console.log("Total width: " + searchMovieProperties.totalWidth);
+        console.log("Available width: " + availableWidth);
+        console.log("ItemWidth: " + searchMovieProperties.itemWidth);
+        console.log("Shift Width: " + searchMovieProperties.shiftWidth);
+        console.log("Number of Shifts: " + searchMovieProperties.shiftNum);
     }
 
+    function shiftMovieSearch(direction){
+        if(direction === "right"){
+            searchMovieProperties.shiftLocation ++;
+        }
+        else{
+            searchMovieProperties.shiftLocation --;
+        }
+        searchMoviesContainer.setAttribute("style", `transform: translateX(${searchMovieProperties.shiftWidth * searchMovieProperties.shiftLocation * (-1)}px)`);
+    }
     function setMovieContainers() {
         searchMoviesContainer = document.getElementById("displayedMovies");
         ratedMoviesContainer = document.getElementById("ratedMoviesContainer");
@@ -172,7 +78,6 @@ const domManipulator = (function() {
             ratedMoviesContainer.removeChild(ratedMoviesContainer.firstChild);
         }
         ratedMovies.map((movie) => buildSingleMovieResult(movie, ratedMoviesContainer));
-        formatMovieLists();
     }
 
     function buildSingleMovieResult(movie, container) {
@@ -228,19 +133,18 @@ const domManipulator = (function() {
             ratedMoviesContainer.removeChild(recommendedMoviesContainer.firstChild);
         }
         recommendedMovieKeys.map((movieId) => buildSingleMovieResult(recommendedMovies[movieId], recommendedMoviesContainer));
-        formatMovieLists();
     }
 
     return {
         buildMovieResults,
-        formatMovieLists,
         buildRatedMovies,
         buildSingleMovieResult,
         buildSingleMovieContainer,
         buildSingleMovieImage,
         buildRating,
         buildRecommendedMovies,
-        shiftSearchMovieList
+        shiftMovieSearch,
+        setNumberOfDisplayedMovies
     }
 })();
 

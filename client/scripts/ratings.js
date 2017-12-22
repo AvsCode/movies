@@ -58,7 +58,7 @@ export function submitRatedMovie(event) {
 
     let recommendedMovies = appApi.getRecommendedMovies();
     let ratedMovies = appApi.getRatedMovies();
-    let searchMovies = appApi.getMovieSearchResults;
+    let searchMovies = appApi.getMovieSearchResults();
 
     let tempMovie = {
         movieId,

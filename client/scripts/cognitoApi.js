@@ -27,31 +27,7 @@ const cognitoApi = (function () {
             let cognitoUser = result.user;
         });
     }
-
-    function signIn(email, password, userPool) {
-        const user = new CognitoUser({
-            Username: email,
-            Pool: userPool
-        });
-        const authenticationData = {
-            Username: email,
-            Password: password
-        }
-        const authenticationDetails = new AuthenticationDetails(authenticationData);
-        user.authenticateUser(authenticationDetails, {
-            onSuccess: async(result) => {
-                console.log(result);
-                let tempMovies = await serverApi.getMovieRatings();
-                appApi.setRecommendedMovies(tempMovies);
-                appApi.buildRecommendedMovies(tempMovies);
-            },
-            onFailure: (err) => {
-                console.log(err);
-            }
-        });
-    }
-
-    function signIn2(email, password) {
+    function signIn(email, password) {
         const userPool = new CognitoUserPool({
             UserPoolId: cognitoConfig.USER_POOL_ID,
             ClientId: cognitoConfig.APP_CLIENT_ID
@@ -166,8 +142,35 @@ const cognitoApi = (function () {
     return {
         signUp,
         invokeApig,
-        signIn2
+        signIn
     }
 })();
 
 export default cognitoApi;
+
+
+
+/*
+    function signIn(email, password, userPool) {
+        const user = new CognitoUser({
+            Username: email,
+            Pool: userPool
+        });
+        const authenticationData = {
+            Username: email,
+            Password: password
+        }
+        const authenticationDetails = new AuthenticationDetails(authenticationData);
+        user.authenticateUser(authenticationDetails, {
+            onSuccess: async(result) => {
+                console.log(result);
+                let tempMovies = await serverApi.getMovieRatings();
+                appApi.setRecommendedMovies(tempMovies);
+                appApi.buildRecommendedMovies(tempMovies);
+            },
+            onFailure: (err) => {
+                console.log(err);
+            }
+        });
+    }
+*/

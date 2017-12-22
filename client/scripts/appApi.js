@@ -37,16 +37,16 @@ const appApi = (function () {
         // Top level events - Login, search, windowResize (for updating number of displayed movies)
         window.addEventListener("resize", ()=>{
             clearTimeout(windowWidthTimeout);
-            windowWidthTimeout = setTimeout(domManipulator.formatMovieLists, 100);
+            windowWidthTimeout = setTimeout(domManipulator.setNumberOfDisplayedMovies, 300);
         });
 
         movieSearchLeft.addEventListener("click", (event) => {
             event.preventDefault();
-            domManipulator.shiftSearchMovieList("left");
+            domManipulator.shiftMovieSearch("left");
         });
         movieSearchRight.addEventListener("click", (event) => {
             event.preventDefault();
-            domManipulator.shiftSearchMovieList("right");
+            domManipulator.shiftMovieSearch("right");
         });
 
         movieSearchForm.addEventListener("submit", submitMovieSearch);
@@ -61,13 +61,13 @@ const appApi = (function () {
     function signIn(event){
         event.preventDefault();
         // Login via cognito - get previously rated movies - query movieDB for more comprehensive info - build the DOM elements with the results
-        cognitoApi.signIn2(userName.value, password.value)
+        cognitoApi.signIn(userName.value, password.value)
         .then(serverApi.getMovieRatings2)
-        .then(movieDbApi.queryMultiple2)
+        .then(movieDbApi.queryMultiple)
         .then((movies) => {
             setRatedMovies(movies);
             domManipulator.buildRatedMovies(ratedMovies);
-            queryRecommendedMovies();
+            setTimeout(queryRecommendedMovies, 10000)
         });
 
         loginForm.classList.add("hidden");
@@ -80,9 +80,10 @@ const appApi = (function () {
     }
 
     function queryRecommendedMovies(){
+        let maxDbRequests = 40;
         let positiveRatedMovies = [];
         for(let i = 0; i < ratedMovies.length; i++){
-            if(ratedMovies[i].movieRating >= 3){
+            if(ratedMovies[i].movieRating >= 3 && positiveRatedMovies.length < 40){
                 positiveRatedMovies.push(ratedMovies[i].movieId);
             }
         }
