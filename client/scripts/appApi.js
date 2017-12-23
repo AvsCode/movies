@@ -7,15 +7,8 @@ const appApi = (function () {
     let movieSearchForm;
     let movieSearchResults = [];
     let ratedMovies = [];
-    let recommendedMovies = {};
-    let recommendedMoviesDisplay = {};
-    let windowWidthTimeout = false;
+    let recommendedMovies = [];
     let movieQuery;
-    let movieListContainer;
-    let movieSearchLeft;
-    let movieSearchRight;
-    let ratedMoviesContainer;
-    let recommendedMoviesContainer;
     let loginForm;
     let userName;
     let password;
@@ -25,30 +18,9 @@ const appApi = (function () {
         // Martialing all the DOM elements of interest
         movieSearchForm = document.getElementById("movieSearchForm");
         movieQuery = document.getElementById("movieSearchQuery");
-        movieListContainer = document.getElementById("displayedMovies");
-        ratedMoviesContainer = document.getElementById("ratedMoviesContainer");
-        recommendedMoviesContainer = document.getElementById("recommendedMoviesContainer");
         loginForm = document.getElementById("loginForm");
         userName = document.getElementById("userName");
         password = document.getElementById("userPassword");
-        movieSearchLeft = document.getElementById("movieSearchLeft");
-        movieSearchRight = document.getElementById("movieSearchRight");
-
-        // Top level events - Login, search, windowResize (for updating number of displayed movies)
-        window.addEventListener("resize", ()=>{
-            clearTimeout(windowWidthTimeout);
-            windowWidthTimeout = setTimeout(domManipulator.setNumberOfDisplayedMovies, 300);
-        });
-
-        movieSearchLeft.addEventListener("click", (event) => {
-            event.preventDefault();
-            domManipulator.shiftMovieSearch("left");
-        });
-        movieSearchRight.addEventListener("click", (event) => {
-            event.preventDefault();
-            domManipulator.shiftMovieSearch("right");
-        });
-
         movieSearchForm.addEventListener("submit", submitMovieSearch);
         loginForm.addEventListener("submit", signIn);
     }
@@ -76,14 +48,16 @@ const appApi = (function () {
     async function submitMovieSearch(event) {
         event.preventDefault();
         movieSearchResults = await movieDbApi.queryDb(movieQuery.value);
-        domManipulator.buildMovieResults(movieSearchResults, movieListContainer);
+        domManipulator.buildMovieResults(movieSearchResults);
     }
 
     function queryRecommendedMovies(){
-        let maxDbRequests = 40;
+        let recommendedMoviesObject = {};
         let positiveRatedMovies = [];
+        let recommendedMoviesKeys = [];
+        let randomRecommendedMovies;
         for(let i = 0; i < ratedMovies.length; i++){
-            if(ratedMovies[i].movieRating >= 3 && positiveRatedMovies.length < 40){
+            if(ratedMovies[i].movieRating >= 3 && positiveRatedMovies.length < 20){
                 positiveRatedMovies.push(ratedMovies[i].movieId);
             }
         }
@@ -91,18 +65,44 @@ const appApi = (function () {
         .then((recMovies) => {
             recMovies.map((movieArray) => {
                 movieArray.map((movie) => {
-                    if(!recommendedMovies[movie.id]){
-                        recommendedMovies[movie.id] = movie;
+                    if(!recommendedMoviesObject[movie.id]){
+                        recommendedMoviesObject[movie.id] = movie;
+                        recommendedMovies.push(movie);
                     }
                 });
             });
             for(let i = 0; i < ratedMovies.length; i++){
-                if(recommendedMovies[ratedMovies[i].movieId]){
-                    delete recommendedMovies[ratedMovies[i].movieId];
+                if(recommendedMoviesObject[ratedMovies[i].movieId]){
+                    delete recommendedMoviesObject[ratedMovies[i].movieId];
                 }
             }
-            domManipulator.buildRecommendedMovies(recommendedMovies);
+
+            recommendedMoviesKeys = Object.keys(recommendedMoviesObject);
+
+            recommendedMovies = recommendedMoviesKeys.map((movieId) => {
+                return recommendedMoviesObject[movieId];
+            });
+
+            randomRecommendedMovies = getRandomRecommendedMovies();
+            domManipulator.buildRecommendedMovies(randomRecommendedMovies);
         });
+    }
+    function getRandomRecommendedMovies(){
+        let randomRecommendedMovies = [];
+        let randomRecommendedMoviesObj = {};
+        let randomIndex;
+        for(let i = 0; i < 20; i++){
+            randomIndex = Math.floor(Math.random() * 240);
+            console.log(randomIndex + " " + recommendedMovies[randomIndex]);
+            // INFINITE LOOP HERE
+            // while(randomRecommendedMoviesObj[recommendedMovies[randomIndex]]){
+            //     console.log(randomRecommendedMoviesObj[recommendedMovies])
+            //     randomIndex = Math.floor(Math.random() * 240);
+            // }
+            randomRecommendedMovies.push(recommendedMovies[randomIndex]);
+            randomRecommendedMoviesObj[recommendedMovies[randomIndex]] = true;
+        }
+        return randomRecommendedMovies;
     }
 
     function setRatedMovies(movies){

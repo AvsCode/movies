@@ -6,85 +6,57 @@ import {
 } from './ratings.js';
 import carouselCreator from './carouselCreator.js';
 
-const domManipulator = (function() {
+const domManipulator = (function () {
 
-    let searchMoviesContainer;
-    let ratedMoviesContainer;
-    let recommendedMoviesContainer;
-    let searchMovies;
-    let ratedMovies;
-    let recommendedMovies;
-    
-    let firstDisplayedSearchMovieIndex = 0;
-    let firstDisplayedRatedMovieIndex = 0;
-    let firstDisplayedRecommendedMovieIndex = 0;
-    
-    let availableWidth;
-    let numberOfDisplayedMovies;
-    let searchMovieProperties = {};
-    
-    setMovieContainers();
+    // let searchMoviesContainer;
+    // let ratedMoviesContainer;
+    // let recommendedMoviesContainer;
+    let searchMoviesCarousel;
+    let ratedMoviesCarousel;
+    let recommendedMoviesCarousel;
 
-    function buildMovieResults(movieSearchResults, movieListContainer) {
-        while (movieListContainer.firstChild) {
-            movieListContainer.removeChild(movieListContainer.firstChild);
-        }
+    // Arrays of movie containers
+    let searchMoviesContainersArray;
+    let ratedMoviesContainersArray;
+    let recommendedMoviesContainersArray;
+
+    // movieSearchResults is an array of movie objects - NOT DOM elements
+    function buildMovieResults(movieSearchResults) {
         movieSearchResults = movieSearchResults.filter((movie) => {
             if (!movie.poster_path) {
                 return false;
             }
-            buildSingleMovieResult(movie, movieListContainer);
             return true;
         });
-        setMovieContainers();
-        setNumberOfDisplayedMovies();
+
+        searchMoviesContainersArray = movieSearchResults.map((movie) => {
+            return buildSingleMovieResult(movie);
+        });
+        searchMoviesCarousel = carouselCreator.createCarousel('searchMoviesContainer');
+        searchMoviesCarousel.addItems(searchMoviesContainersArray);
     }
 
-    function setNumberOfDisplayedMovies() {
-        searchMovieProperties.totalWidth = searchMoviesContainer.scrollWidth;
-        availableWidth = window.innerWidth;
-        searchMovieProperties.itemWidth = 220;
-        searchMovieProperties.shiftWidth = Math.floor(availableWidth / searchMovieProperties.itemWidth) * searchMovieProperties.itemWidth;
-        searchMovieProperties.shiftNum = Math.ceil(searchMovieProperties.totalWidth / searchMovieProperties.shiftWidth) -1;
-        searchMovieProperties.shiftLocation = 0;
-        numberOfDisplayedMovies = Math.floor(availableWidth / 200) - 1;
-
-        console.log("Total width: " + searchMovieProperties.totalWidth);
-        console.log("Available width: " + availableWidth);
-        console.log("ItemWidth: " + searchMovieProperties.itemWidth);
-        console.log("Shift Width: " + searchMovieProperties.shiftWidth);
-        console.log("Number of Shifts: " + searchMovieProperties.shiftNum);
+    function buildRecommendedMovies(recommendedMovies) {
+        console.log(recommendedMovies);
+        recommendedMoviesContainersArray = recommendedMovies.map((movie) => {
+            console.log(movie);
+            return buildSingleMovieResult(movie);
+        });
+        recommendedMoviesCarousel = carouselCreator.createCarousel('recommendedMoviesContainer');
+        recommendedMoviesCarousel.addItems(recommendedMoviesContainersArray);
     }
 
-    function shiftMovieSearch(direction){
-        if(direction === "right"){
-            searchMovieProperties.shiftLocation ++;
-        }
-        else{
-            searchMovieProperties.shiftLocation --;
-        }
-        searchMoviesContainer.setAttribute("style", `transform: translateX(${searchMovieProperties.shiftWidth * searchMovieProperties.shiftLocation * (-1)}px)`);
-    }
-    function setMovieContainers() {
-        searchMoviesContainer = document.getElementById("displayedMovies");
-        ratedMoviesContainer = document.getElementById("ratedMoviesContainer");
-        recommendedMoviesContainer = document.getElementById("recommendedMoviesContainer");
-        searchMovies = searchMoviesContainer.children;
-        ratedMovies = ratedMoviesContainer.children;
-        recommendedMovies = recommendedMoviesContainer.children;
-    }
     function buildRatedMovies(ratedMovies) {
-        while (ratedMoviesContainer.firstChild) {
-            ratedMoviesContainer.removeChild(ratedMoviesContainer.firstChild);
-        }
-        ratedMovies.map((movie) => buildSingleMovieResult(movie, ratedMoviesContainer));
+        ratedMoviesContainersArray = ratedMovies.map((movie) => {
+            return buildSingleMovieResult(movie);
+        });
+        ratedMoviesCarousel = carouselCreator.createCarousel('ratedMoviesContainer');
+        ratedMoviesCarousel.addItems(ratedMoviesContainersArray);
     }
 
-    function buildSingleMovieResult(movie, container) {
+    function buildSingleMovieResult(movie) {
         let newDiv = buildSingleMovieContainer(movie);
-        buildSingleMovieImage(movie, newDiv);
-        buildRating(newDiv, movie.movieRating, );
-        container.appendChild(newDiv);
+        return newDiv;
     }
 
     function buildSingleMovieContainer(movie) {
@@ -92,10 +64,12 @@ const domManipulator = (function() {
         newDiv.setAttribute("movieId", movie.id);
         newDiv.setAttribute("movieTitle", movie.title);
         newDiv.classList.add("singleMovie");
+        newDiv = buildSingleMovieImage(newDiv, movie);
+        newDiv = buildRating(newDiv, movie.movieRating);
         return newDiv;
     }
 
-    function buildSingleMovieImage(movie, newDiv) {
+    function buildSingleMovieImage(newDiv, movie) {
         const posterPath = 'https://image.tmdb.org/t/p/w500/';
         let moviePosterUrl = movie.poster_path != null ? posterPath + movie.poster_path : './images/placeholder.png';
 
@@ -103,6 +77,7 @@ const domManipulator = (function() {
         newMoviePoster.src = moviePosterUrl;
         newMoviePoster.classList.add("singleMovieImage");
         newDiv.appendChild(newMoviePoster);
+        return newDiv;
     }
 
     function buildRating(newDiv, movieRating) {
@@ -125,26 +100,13 @@ const domManipulator = (function() {
             rating.appendChild(ratingSpan);
         }
         newDiv.appendChild(rating);
-    }
-
-    function buildRecommendedMovies(recommendedMovies) {
-        let recommendedMovieKeys = Object.keys(recommendedMovies);
-        while (recommendedMoviesContainer.firstChild) {
-            ratedMoviesContainer.removeChild(recommendedMoviesContainer.firstChild);
-        }
-        recommendedMovieKeys.map((movieId) => buildSingleMovieResult(recommendedMovies[movieId], recommendedMoviesContainer));
+        return newDiv;
     }
 
     return {
         buildMovieResults,
         buildRatedMovies,
-        buildSingleMovieResult,
-        buildSingleMovieContainer,
-        buildSingleMovieImage,
-        buildRating,
         buildRecommendedMovies,
-        shiftMovieSearch,
-        setNumberOfDisplayedMovies
     }
 })();
 

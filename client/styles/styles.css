@@ -21,9 +21,9 @@
     display: none;
 }
 
-#movieListContainer {
+/* #movieListContainer {
     width: 100%;
-}
+} */
 
 .carouselContainer {
     position: relative;
@@ -37,79 +37,12 @@
     transition-duration: .5s;
 }
 
-
-/* #displayedMovies, #ratedMoviesContainer, #recommendedMoviesContainer {
-    margin: 10px auto;
-    display: flex;
-    overflow: hidden;
-} */
-
-#ratedMoviesContainer,
-#recommendedMoviesContainer {
-    margin: 10px auto;
-    display: flex;
-    overflow: hidden;
-}
-
-
-/* body:hover div {
-    display: block;
-    
-    -webkit-animation: slide-down .3s ease-out;
-    -moz-animation: slide-down .3s ease-out;
-}
-
-@-webkit-keyframes slide-down {
-      0% { opacity: 0; -webkit-transform: translateY(-100%); }   
-    100% { opacity: 1; -webkit-transform: translateY(0); }
-} */
-
 .singleMovie {
     display: inline-flex;
     background-color: black;
     flex-direction: column;
     margin: 10px;
     -webkit-animation: slide-in 1s;
-    /* width: 300px; */
-    /* border: 2px solid black; */
-    /* border-radius: 5px; */
-    /* box-shadow: 2px 2px black; */
-}
-
-@-webkit-keyframes slide-in-right {
-    0% {
-        -webkit-transform: translateX(500%);
-    }
-    100% {
-        -webkit-transform: translateX(0%);
-    }
-}
-
-@-webkit-keyframes slide-in-left {
-    0% {
-        -webkit-transform: translateX(-500%);
-    }
-    100% {
-        -webkit-transform: translateX(0%);
-    }
-}
-
-@-webkit-keyframes slide-out-left {
-    0% {
-        -webkit-transform: translateX(1000%);
-    }
-    100% {
-        -webkit-transform: translateX(-500%);
-    }
-}
-
-@-webkit-keyframes slide-out-right {
-    0% {
-        -webkit-transform: translateX(-1000%);
-    }
-    100% {
-        -webkit-transform: translateX(500%);
-    }
 }
 
 .singleMovie h3 {
