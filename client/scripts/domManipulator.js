@@ -28,7 +28,7 @@ const domManipulator = (function () {
             }
             return true;
         });
-
+        document.getElementById('searchMoviesContainer').innerHTML = '';
         searchMoviesContainersArray = movieSearchResults.map((movie) => {
             return buildSingleMovieResult(movie);
         });

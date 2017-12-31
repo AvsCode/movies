@@ -1,3 +1,6 @@
+body{
+    background-color: #E2E2E2;
+}
 #header {
     height: 300px;
     background-color: gray;
@@ -19,22 +22,6 @@
 
 .hidden {
     display: none;
-}
-
-/* #movieListContainer {
-    width: 100%;
-} */
-
-.carouselContainer {
-    position: relative;
-    margin: 10px auto;
-    overflow: hidden;
-}
-
-.carousel {
-    display: flex;
-    position: relative;
-    transition-duration: .5s;
 }
 
 .singleMovie {

@@ -1,0 +1,36 @@
+.carouselContainer {
+    position: relative;
+    margin: 10px auto;
+    overflow: hidden;
+}
+
+.carousel {
+    display: flex;
+    position: relative;
+    transition-duration: .5s;
+    margin: 0 40px;
+}
+
+.carouselBtn{
+    position: absolute;
+    z-index: 100;
+    top: 10%;
+    height: 80%;
+    width: 40px;
+    background-color: rgba(266, 266, 266, .8);
+    border: none;
+    outline: none;
+    font-size: x-large;
+}
+
+.carouselBtn:hover{
+    background-color: rgba(255, 255, 255, 1);
+    cursor: pointer;
+}
+
+.btnRight{
+    right: 0;
+}
+.btnLeft{
+    left: 0;
+}

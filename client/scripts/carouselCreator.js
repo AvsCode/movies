@@ -20,19 +20,27 @@ const carousel = function(containerId, carouselId){
         container = document.getElementById(containerId);
         buttonLeft = document.createElement('button');
         buttonRight = document.createElement('button');
-        buttonRight.classList.add('btnRight');
-        buttonLeft.classList.add('btnLeft');
-
         carousel = document.createElement('div');
+
+        container.classList.add('carouselContainer');
+        buttonRight.classList.add('carouselBtn');
+        buttonRight.classList.add('btnRight');
+        buttonLeft.classList.add('carouselBtn');
+        buttonLeft.classList.add('btnLeft');
         carousel.classList.add('carousel');
+
         if(carouselId){
             carousel.id = carouselId;
         }
         container.appendChild(buttonLeft);
         container.appendChild(carousel);
         container.appendChild(buttonRight);
-        container.setAttribute('style', 'position: relative; margin: 10px auto; overflow: hidden');
-        carousel.setAttribute('style', 'display: flex; position: relative; transition-duration: .5s');
+        // container.setAttribute('style', 'position: relative; margin: 10px auto; overflow: hidden');
+        // carousel.setAttribute('style', 'display: flex; position: relative; transition-duration: .5s; margin: 0 40px;');
+        // buttonRight.setAttribute('style', 'position: absolute; z-index: 100;top: 10% ; height: 80%; width: 40px; right: 0; background-color: rgba(226, 226, 226, .5); border: none;');
+        // buttonLeft.setAttribute('style', 'position: absolute; z-index: 100;top: 10%; height: 80%; width: 40px; left: 0; background-color: rgba(226, 226, 226, .5); border: none;');
+        buttonLeft.innerHTML = '&#8678;';
+        buttonRight.innerHTML = '&#8680;';
 
         let windowWidthTimeout = false;
         window.addEventListener("resize", ()=>{
@@ -46,7 +54,6 @@ const carousel = function(containerId, carouselId){
             shiftCarousel('left');
         });
     }
-
     // Takes an array of DOM elements, and adds them to the carousel
     function addItems(items){
         for(let i = 0; i < items.length; i++){
@@ -76,6 +83,8 @@ const carousel = function(containerId, carouselId){
         let itemOffsetWidth =  carousel.childNodes[0].offsetWidth;
         let itemMarginLeft = parseInt(itemStyle.marginLeft);
         let itemMarginRight = parseInt(itemStyle.marginRight);
+        let buttons = document.getElementsByClassName('carouselBtn');
+        let buttonWidth = buttons[0].offsetWidth;
 
         itemWidth = itemOffsetWidth + itemMarginLeft + itemMarginRight;
         availableWidth = window.innerWidth;
@@ -86,14 +95,13 @@ const carousel = function(containerId, carouselId){
     }
 
     function shiftCarousel(direction){
-        console.log("click");
         if(direction === 'right'){
             shiftLocation = shiftLocation != shiftNumber ? (shiftLocation + 1) : 0
         }
         else{
             shiftLocation = shiftLocation != 0 ? (shiftLocation - 1) : shiftNumber
         }
-        carousel.setAttribute('style', `transform: translateX(${shiftWidth*shiftLocation*(-1)}px)`);
+        carousel.setAttribute('style', `transform: translateX(${shiftWidth*shiftLocation*(-1)}px); margin: 0 40px;`);
     }
 
     return{

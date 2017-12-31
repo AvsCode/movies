@@ -92,13 +92,8 @@ const appApi = (function () {
         let randomRecommendedMoviesObj = {};
         let randomIndex;
         for(let i = 0; i < 20; i++){
-            randomIndex = Math.floor(Math.random() * 240);
+            randomIndex = Math.floor(Math.random() * recommendedMovies.length);
             console.log(randomIndex + " " + recommendedMovies[randomIndex]);
-            // INFINITE LOOP HERE
-            // while(randomRecommendedMoviesObj[recommendedMovies[randomIndex]]){
-            //     console.log(randomRecommendedMoviesObj[recommendedMovies])
-            //     randomIndex = Math.floor(Math.random() * 240);
-            // }
             randomRecommendedMovies.push(recommendedMovies[randomIndex]);
             randomRecommendedMoviesObj[recommendedMovies[randomIndex]] = true;
         }
