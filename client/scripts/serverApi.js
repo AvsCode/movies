@@ -3,15 +3,7 @@ import movieDbApi from './movieDbApi.js';
 
 const serverApi = (function(){
 
-    async function getMovieRatings(){
-        let tempMovies = await cognitoApi.invokeApig({
-            path: "/movies/getMovieRatings",
-            method: "GET"
-        });
-        let recommendedMovies = await movieDbApi.queryMultiple(tempMovies.Items);
-        return recommendedMovies;
-    }
-    function getMovieRatings2(){
+    function getMovieRatings(){
         return cognitoApi.invokeApig({
                 path: "/movies/getMovieRatings",
                 method: "GET"
@@ -34,7 +26,6 @@ const serverApi = (function(){
     return{
         createMovieRating,
         getMovieRatings,
-        getMovieRatings2,
         deleteMovieRating
     }
 })();

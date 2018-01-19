@@ -1,0 +1,8 @@
+#loginHeader{
+    display: flex;
+    justify-content: flex-end;
+    height: 8%;
+}
+#loginError{
+    color: red;
+}

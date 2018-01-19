@@ -5,15 +5,20 @@ import {
     submitRatedMovie
 } from './ratings.js';
 import carouselCreator from './carouselCreator.js';
+import cognitoApi from './cognitoApi';
 
 const domManipulator = (function () {
 
-    // let searchMoviesContainer;
-    // let ratedMoviesContainer;
-    // let recommendedMoviesContainer;
+    let loginError = document.getElementById("loginError");
+    let loginForm = document.getElementById("loginForm");
+    let loggedInUser = document.getElementById("loggedInUser");
+    let signOutBtn = document.getElementById("signOut");
+
     let searchMoviesCarousel;
     let ratedMoviesCarousel;
     let recommendedMoviesCarousel;
+
+    let loggedInUserName;
 
     // Arrays of movie containers
     let searchMoviesContainersArray;
@@ -103,10 +108,43 @@ const domManipulator = (function () {
         return newDiv;
     }
 
+    function showLoginError(){
+        loginError.classList.remove("hiddenInPlace");
+    }
+    function hideLoginError(){
+        loginError.classList.add("hiddenInPlace");
+    }
+    function hideLogin(){
+        loginForm.classList.add("hidden");
+        loginError.classList.remove("hiddenInPlace");
+        loginError.classList.add("hidden");
+        loggedInUser.classList.remove("hidden");
+    }
+    function showSignOut(){
+        signOutBtn.classList.remove("hidden");
+    }
+    async function showUser(){
+        cognitoApi.getUsername((name) =>  {
+            loggedInUserName = name;
+            loggedInUser.innerText = loggedInUserName;
+            hideLogin();
+        });
+    }
+    function reset(){
+        ratedMoviesCarousel.reset();
+        recommendedMoviesCarousel.reset();
+        searchMoviesCarousel.reset();
+    }
     return {
         buildMovieResults,
         buildRatedMovies,
         buildRecommendedMovies,
+        showLoginError,
+        hideLoginError,
+        hideLogin,
+        showUser,
+        showSignOut,
+        reset
     }
 })();
 

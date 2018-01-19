@@ -12,11 +12,12 @@ const carousel = function(containerId, carouselId){
     let itemWidth;
     let shiftWidth;
     let shiftNumber;
-    let shiftLocation;
+    let shiftLocation = 0;
 
     setUp();
 
     function setUp(){
+
         container = document.getElementById(containerId);
         buttonLeft = document.createElement('button');
         buttonRight = document.createElement('button');
@@ -69,8 +70,8 @@ const carousel = function(containerId, carouselId){
     }
 
     function reset(){
-        while(carousel.firstChild){
-            carousel.removeChild(container.firstChild);
+        while(container.firstChild){
+            container.removeChild(container.firstChild);
         }
     }
 
@@ -91,7 +92,6 @@ const carousel = function(containerId, carouselId){
         carouselWidth = carousel.scrollWidth;
         shiftWidth = Math.floor(availableWidth / itemWidth) * itemWidth;
         shiftNumber = Math.ceil(carouselWidth / shiftWidth) - 1;
-        shiftLocation = 0;
     }
 
     function shiftCarousel(direction){

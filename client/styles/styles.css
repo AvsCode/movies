@@ -1,3 +1,6 @@
+*{
+    font-family: Arial, Helvetica, sans-serif;
+}
 body{
     background-color: #E2E2E2;
 }
@@ -24,6 +27,9 @@ body{
     display: none;
 }
 
+.hiddenInPlace{
+    visibility: hidden;
+}
 .singleMovie {
     display: inline-flex;
     background-color: black;

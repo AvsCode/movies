@@ -12,17 +12,26 @@ const appApi = (function () {
     let loginForm;
     let userName;
     let password;
+    let signOutBtn;
 
-    function setUp() {
-
+    async function setUp() {
         // Martialing all the DOM elements of interest
         movieSearchForm = document.getElementById("movieSearchForm");
         movieQuery = document.getElementById("movieSearchQuery");
         loginForm = document.getElementById("loginForm");
         userName = document.getElementById("userName");
         password = document.getElementById("userPassword");
+        signOutBtn = document.getElementById("signOut");
+
+        // Check if User has recently logged in:
+        if(await cognitoApi.checkUserSignIn()){
+            await domManipulator.showUser();
+            domManipulator.showSignOut();
+            loadCurrentUserMovies();
+        }
         movieSearchForm.addEventListener("submit", submitMovieSearch);
         loginForm.addEventListener("submit", signIn);
+        signOutBtn.addEventListener("click", signOut);
     }
 
     function signUp(event) {
@@ -34,15 +43,50 @@ const appApi = (function () {
         event.preventDefault();
         // Login via cognito - get previously rated movies - query movieDB for more comprehensive info - build the DOM elements with the results
         cognitoApi.signIn(userName.value, password.value)
-        .then(serverApi.getMovieRatings2)
+        .then((responseStatus) => {
+            console.log(responseStatus);
+            if(responseStatus === 'Success'){
+                return serverApi.getMovieRatings();
+            }
+            else{
+                return;
+            }
+        })
         .then(movieDbApi.queryMultiple)
         .then((movies) => {
+            // Hiding the login form
+            domManipulator.hideLogin();
+            domManipulator.showUser();
+            domManipulator.showSignOut();
             setRatedMovies(movies);
             domManipulator.buildRatedMovies(ratedMovies);
             setTimeout(queryRecommendedMovies, 10000)
+        })
+        .catch((error) => {
+            domManipulator.showLoginError();
+            console.log(error);
         });
+    }
 
-        loginForm.classList.add("hidden");
+    function signOut(event){
+        console.log("hello2!");
+        event.preventDefault();
+        cognitoApi.signOut();
+        domManipulator.reset();
+    }
+
+    function loadCurrentUserMovies(){
+        serverApi.getMovieRatings()
+        .then(movieDbApi.queryMultiple)
+        .then((movies) => {
+            domManipulator.hideLogin();
+            setRatedMovies(movies);
+            domManipulator.buildRatedMovies(ratedMovies);
+            setTimeout(queryRecommendedMovies, 10000);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
     }
     
     async function submitMovieSearch(event) {

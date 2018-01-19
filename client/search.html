@@ -6,17 +6,26 @@
     <title>Movies!</title>
     <link rel="stylesheet" type="text/css" href="./styles/styles.css">
     <link rel="stylesheet" type="text/css" href="./styles/carouselStyles.css">
+    <link rel="stylesheet" type="text/css" href="./styles/loginHeader.css">
 </head>
 
 <body>
-    <h1>Movies!</h1>
-    <form id="loginForm">
-        <label for="userName">User Name</label>
-        <input type="text" id="userName">
-        <label for="userPassword">Password</label>
-        <input type="password" id="userPassword">
-        <button>Login!</button>
-    </form>
+    <div id="loginHeader">
+        <div id="loginError" class="hiddenInPlace">
+            <span>Incorrect Username or Password </span>
+        </div>
+        <form id="loginForm">
+            <label for="userName">User Name</label>
+            <input type="text" id="userName">
+            <label for="userPassword">Password</label>
+            <input type="password" id="userPassword">
+            <button>Login!</button>
+        </form>
+        <div id="loggedInUser" class="hidden">
+            <span></span>
+        </div>
+        <button id="signOut" class="hidden">Sign Out</button>
+    </div>
     <form id="movieSearchForm">
         <div>Search for more movies: </div>
         <input id="movieSearchQuery" type="text">

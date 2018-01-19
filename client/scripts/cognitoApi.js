@@ -27,6 +27,7 @@ const cognitoApi = (function () {
             let cognitoUser = result.user;
         });
     }
+
     function signIn(email, password) {
         const userPool = new CognitoUserPool({
             UserPoolId: cognitoConfig.USER_POOL_ID,
@@ -45,16 +46,19 @@ const cognitoApi = (function () {
             user.authenticateUser(authenticationDetails, {
                 onSuccess: (result) => {
                     console.log(result);
-                    resolve();
+                    resolve('Success');
                 },
                 onFailure: (err) => {
                     console.log(err);
-                    reject();
+                    reject('Failure');
                 }
             });
         });
     }
-    // 
+    function signOut(){
+        const currentUser = getCurrentUser();
+        currentUser.signOut();
+    }
     async function authUser() {
         if (AWS.config.credentials && Date.now() < AWS.config.credentials.expireTime - 60000) {
             return true;
@@ -67,6 +71,17 @@ const cognitoApi = (function () {
         const userToken = await getUserToken(currentUser);
         await getAWSCredentials(userToken);
         return true;
+    }
+
+    async function reAuthUser() {
+        const currentUser = getCurrentUser(); {
+            if (currentUser === null) {
+                return false;
+            }
+            const userToken = await getUserToken(currentUser);
+            await getAWSCredentials(userToken);
+            return true;
+        }
     }
 
     function getAWSCredentials(userToken) {
@@ -102,7 +117,6 @@ const cognitoApi = (function () {
         });
         return userPool.getCurrentUser();
     }
-
     async function invokeApig({
         path,
         method = "GET",
@@ -139,10 +153,45 @@ const cognitoApi = (function () {
         }
         return results.json();
     }
+
+    async function checkUserSignIn() {
+        if (await reAuthUser()){
+            return true;
+        }
+        return false;
+    }
+
+    async function getUsername(cb) {
+        const currentUser = getCurrentUser();
+        let userName = '';
+        await currentUser.getSession(function (err, session) {
+            if (err) {
+                console.log(err);
+                return;
+            }
+            currentUser.getUserAttributes(function (err, result) {
+                if (err) {
+                    console.log(err);
+                    return;
+                }
+                for(let i = 0; i < result.length; i++){
+                    if(result[i].Name === 'email'){
+                        userName = result[i].Value;
+                        cb(userName);
+                        return;
+                    }
+                }
+            });
+        });
+    }
     return {
         signUp,
         invokeApig,
-        signIn
+        signIn,
+        signOut,
+        checkUserSignIn,
+        getUsername,
+        getCurrentUser
     }
 })();
 
