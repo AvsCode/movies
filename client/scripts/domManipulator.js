@@ -42,9 +42,7 @@ const domManipulator = (function () {
     }
 
     function buildRecommendedMovies(recommendedMovies) {
-        console.log(recommendedMovies);
         recommendedMoviesContainersArray = recommendedMovies.map((movie) => {
-            console.log(movie);
             return buildSingleMovieResult(movie);
         });
         recommendedMoviesCarousel = carouselCreator.createCarousel('recommendedMoviesContainer');
@@ -108,32 +106,48 @@ const domManipulator = (function () {
         return newDiv;
     }
 
-    function showLoginError(){
+    function showLoginError() {
         loginError.classList.remove("hiddenInPlace");
     }
-    function hideLoginError(){
+
+    function hideLoginError() {
         loginError.classList.add("hiddenInPlace");
     }
-    function hideLogin(){
+
+    function hideLogin() {
         loginForm.classList.add("hidden");
         loginError.classList.remove("hiddenInPlace");
         loginError.classList.add("hidden");
         loggedInUser.classList.remove("hidden");
     }
-    function showSignOut(){
+
+    function showLogin() {
+        loginForm.classList.remove("hidden");
+        loginError.classList.add("hiddenInPlace");
+        loginError.classList.remove("hidden");
+        loggedInUser.classList.add("hidden");
+        signOutBtn.classList.add("hidden");
+    }
+
+    function showSignOut() {
         signOutBtn.classList.remove("hidden");
     }
-    async function showUser(){
-        cognitoApi.getUsername((name) =>  {
+    async function showUser() {
+        cognitoApi.getUsername((name) => {
             loggedInUserName = name;
             loggedInUser.innerText = loggedInUserName;
             hideLogin();
         });
     }
-    function reset(){
-        ratedMoviesCarousel.reset();
-        recommendedMoviesCarousel.reset();
-        searchMoviesCarousel.reset();
+
+    function reset() {
+        try {
+            ratedMoviesCarousel.reset();
+            recommendedMoviesCarousel.reset();
+            searchMoviesCarousel.reset();
+        } catch (error) {
+            console.log(error);
+        }
     }
     return {
         buildMovieResults,
@@ -142,6 +156,7 @@ const domManipulator = (function () {
         showLoginError,
         hideLoginError,
         hideLogin,
+        showLogin,
         showUser,
         showSignOut,
         reset

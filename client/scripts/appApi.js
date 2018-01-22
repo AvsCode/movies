@@ -22,6 +22,7 @@ const appApi = (function () {
         userName = document.getElementById("userName");
         password = document.getElementById("userPassword");
         signOutBtn = document.getElementById("signOut");
+        movieDbApi.getPopularMovies();
 
         // Check if User has recently logged in:
         if(await cognitoApi.checkUserSignIn()){
@@ -60,7 +61,9 @@ const appApi = (function () {
             domManipulator.showSignOut();
             setRatedMovies(movies);
             domManipulator.buildRatedMovies(ratedMovies);
-            setTimeout(queryRecommendedMovies, 10000)
+            userName.value = "";
+            password.value = "";
+            setTimeout(queryRecommendedMovies, 10000);
         })
         .catch((error) => {
             domManipulator.showLoginError();
@@ -69,8 +72,8 @@ const appApi = (function () {
     }
 
     function signOut(event){
-        console.log("hello2!");
         event.preventDefault();
+        domManipulator.showLogin();
         cognitoApi.signOut();
         domManipulator.reset();
     }
@@ -95,7 +98,7 @@ const appApi = (function () {
         domManipulator.buildMovieResults(movieSearchResults);
     }
 
-    function queryRecommendedMovies(){
+    async function queryRecommendedMovies(){
         let recommendedMoviesObject = {};
         let positiveRatedMovies = [];
         let recommendedMoviesKeys = [];
@@ -106,7 +109,7 @@ const appApi = (function () {
             }
         }
         movieDbApi.getMovieRecommendations(positiveRatedMovies)
-        .then((recMovies) => {
+        .then(async function(recMovies) {
             recMovies.map((movieArray) => {
                 movieArray.map((movie) => {
                     if(!recommendedMoviesObject[movie.id]){
@@ -126,9 +129,10 @@ const appApi = (function () {
             recommendedMovies = recommendedMoviesKeys.map((movieId) => {
                 return recommendedMoviesObject[movieId];
             });
-
-            randomRecommendedMovies = getRandomRecommendedMovies();
-            domManipulator.buildRecommendedMovies(randomRecommendedMovies);
+            if(await cognitoApi.checkUserSignIn()){
+                randomRecommendedMovies = getRandomRecommendedMovies();
+                domManipulator.buildRecommendedMovies(randomRecommendedMovies);
+            }
         });
     }
     function getRandomRecommendedMovies(){
@@ -137,7 +141,6 @@ const appApi = (function () {
         let randomIndex;
         for(let i = 0; i < 20; i++){
             randomIndex = Math.floor(Math.random() * recommendedMovies.length);
-            console.log(randomIndex + " " + recommendedMovies[randomIndex]);
             randomRecommendedMovies.push(recommendedMovies[randomIndex]);
             randomRecommendedMoviesObj[recommendedMovies[randomIndex]] = true;
         }

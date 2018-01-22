@@ -1,8 +1,14 @@
 #loginHeader{
     display: flex;
     justify-content: flex-end;
+    padding: 5px;
+    background-color: #8181F5;
+    color: white;
     height: 8%;
 }
 #loginError{
     color: red;
+}
+#loggedInUser{
+    margin-right: 10px;
 }
