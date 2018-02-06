@@ -22,7 +22,8 @@ const appApi = (function () {
         userName = document.getElementById("userName");
         password = document.getElementById("userPassword");
         signOutBtn = document.getElementById("signOut");
-        movieDbApi.getPopularMovies();
+
+        getPopularMovies();
 
         // Check if User has recently logged in:
         if(await cognitoApi.checkUserSignIn()){
@@ -92,6 +93,11 @@ const appApi = (function () {
         });
     }
     
+    async function getPopularMovies(){
+        movieDbApi.getPopularMovies().then((movies) => {
+            domManipulator.buildPopularMovies(movies);
+        });
+    }
     async function submitMovieSearch(event) {
         event.preventDefault();
         movieSearchResults = await movieDbApi.queryDb(movieQuery.value);

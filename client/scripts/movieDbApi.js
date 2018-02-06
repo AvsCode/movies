@@ -54,8 +54,7 @@ const movieDbApi = (function () {
             .then((response) => {
                 return response.json()
             }).then((response) => {
-                console.log(response);
-                // return response.results;
+                return response.results;
             });
     }
     return {

@@ -8,11 +8,13 @@ import carouselCreator from './carouselCreator.js';
 import cognitoApi from './cognitoApi';
 
 const domManipulator = (function () {
+    const posterPath = 'https://image.tmdb.org/t/p/w500/';
 
     let loginError = document.getElementById("loginError");
     let loginForm = document.getElementById("loginForm");
     let loggedInUser = document.getElementById("loggedInUser");
     let signOutBtn = document.getElementById("signOut");
+    let popularMoviesHtml = document.getElementById("popularMoviesContainer");
 
     let searchMoviesCarousel;
     let ratedMoviesCarousel;
@@ -39,6 +41,77 @@ const domManipulator = (function () {
         });
         searchMoviesCarousel = carouselCreator.createCarousel('searchMoviesContainer');
         searchMoviesCarousel.addItems(searchMoviesContainersArray);
+    }
+    function buildPopularMovies(popularMovies){
+        let tempMovies = [];
+        // Building individual Popular Movie divs
+        for(let i = 0; i < popularMovies.length; i++){
+            let posterUrl = posterPath + popularMovies[i].backdrop_path;
+            let posterImg = document.createElement('img');
+            posterImg.setAttribute("alt", popularMovies[i].title);
+            posterImg.setAttribute("title", popularMovies[i].title)
+            posterImg.src = posterUrl;
+
+            let movieTitle = document.createElement("h3");
+            movieTitle.innerText = popularMovies[i].title;
+
+            let newDiv = document.createElement('div');
+            newDiv.appendChild(posterImg);
+            newDiv.appendChild(movieTitle);
+
+            tempMovies.push(newDiv);
+        }
+        // Grouping them by twos for display - appending them to the DOM
+        for(let i = 0; i < tempMovies.length; i += 2){
+            let doublePopularMovie = document.createElement('div');
+            doublePopularMovie.classList.add('popularMovie');
+            doublePopularMovie.classList.add('invisible');
+            doublePopularMovie.classList.add('hidden');
+            doublePopularMovie.appendChild(tempMovies[i]);
+            doublePopularMovie.appendChild(tempMovies[i+1]);
+            popularMoviesHtml.appendChild(doublePopularMovie);
+        }
+        let popularMoviesArray = document.getElementsByClassName("popularMovie");
+
+        // Setting up the toggle display interval
+
+        toggleHidden(popularMoviesArray[0]);
+        let currentLocation = 0;
+        setInterval(()=> {
+            for(let i = 0; i < 2; i++){
+                if(currentLocation >= popularMoviesArray.length){
+                    currentLocation = 0;
+                }
+                toggleHidden(popularMoviesArray[currentLocation]);
+                currentLocation++;
+            }
+            currentLocation -=1;
+        }, 3000);
+    }
+
+    function toggleHidden(item){
+        if(item.classList.contains('hidden')){ 
+            setTimeout(()=>{
+                item.classList.remove('hidden');
+                item.classList.add('invisible');
+                setTimeout(()=> {
+                    item.classList.remove('invisible');
+                }, 100);
+            }, 500);
+        }
+        else{
+            item.classList.add('invisible');
+            setTimeout(()=>{
+                item.classList.add('hidden');
+                item.classList.remove('invisible');
+            }, 500);
+        }
+        // if(item.classList.contains("invisible")){
+        //     item.classList.remove("invisible");
+        // }
+        // else{
+        //     item.classList.add("invisible");
+        // }
     }
 
     function buildRecommendedMovies(recommendedMovies) {
@@ -150,6 +223,7 @@ const domManipulator = (function () {
         }
     }
     return {
+        buildPopularMovies,
         buildMovieResults,
         buildRatedMovies,
         buildRecommendedMovies,

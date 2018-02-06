@@ -24,6 +24,39 @@ body{
     width: 90%;
 }
 
+#popularMoviesContainer{
+    width: 1000px;
+    margin: 0 auto;
+    /* display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    overflow: hidden; */
+}
+
+.popularMovie{
+    opacity: 1;
+    transition: opacity .5s;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    /* position: fixed; */
+    margin: 0 auto;
+}
+
+.popularMovie.invisible{
+    opacity: 0;
+    transition: opacity .5s;
+}
+
+.popularMovie h3{
+    text-align: center;
+}
+
+.popularMovie div{
+    margin: 0 10px;
+}
+
 .hidden {
     display: none;
 }
