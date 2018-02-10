@@ -86,7 +86,7 @@ const domManipulator = (function () {
                 currentLocation++;
             }
             currentLocation -=1;
-        }, 3000);
+        }, 4000);
     }
 
     function toggleHidden(item){
@@ -97,14 +97,14 @@ const domManipulator = (function () {
                 setTimeout(()=> {
                     item.classList.remove('invisible');
                 }, 100);
-            }, 500);
+            }, 750);
         }
         else{
             item.classList.add('invisible');
             setTimeout(()=>{
                 item.classList.add('hidden');
                 item.classList.remove('invisible');
-            }, 500);
+            }, 750);
         }
         // if(item.classList.contains("invisible")){
         //     item.classList.remove("invisible");
@@ -152,6 +152,8 @@ const domManipulator = (function () {
         let newMoviePoster = document.createElement("img");
         newMoviePoster.src = moviePosterUrl;
         newMoviePoster.classList.add("singleMovieImage");
+        newMoviePoster.setAttribute('alt', movie.title);
+        newMoviePoster.setAttribute('title', movie.title);
         newDiv.appendChild(newMoviePoster);
         return newDiv;
     }

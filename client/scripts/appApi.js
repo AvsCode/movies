@@ -4,6 +4,7 @@ import movieDbApi from './movieDbApi.js';
 import domManipulator from './domManipulator.js';
 
 const appApi = (function () {
+    let loggedIn = false;
     let movieSearchForm;
     let movieSearchResults = [];
     let ratedMovies = [];
@@ -28,6 +29,7 @@ const appApi = (function () {
         // Check if User has recently logged in:
         if(await cognitoApi.checkUserSignIn()){
             await domManipulator.showUser();
+            loggedIn = true;
             domManipulator.showSignOut();
             loadCurrentUserMovies();
         }
